@@ -1,35 +1,28 @@
 package couchdb
 
-func JoinAllClusterAction(pass string, nodes []string) {
-	template := &Template{}
-	coord := nodes[0]
-
-	for i := 1; i < len(nodes); i++ {
-		node := nodes[i]
-
-		template.SetTemplate(&EnableClusterAction{
-			NodePassHolder: NodePassHolder{
-				pass: pass,
-				node: node,
-			},
-		})
-		template.Do(coord)
-
-		template.SetTemplate(&AddNodeAction{
-			NodePassHolder: NodePassHolder{
-				pass: pass,
-				node: node,
-			},
-		})
-		template.Do(coord)
+func JoinAllClusterAction(user, pass, coord string, nodes []string, port int) error {
+	template := &CouchDbHTTP{}
+	n := Node{
+		user: user,
+		pass: pass,
+		port: port,
 	}
 
-	template.SetTemplate(&FinishClusterAction{
-		NodePassHolder: NodePassHolder{
-			pass: pass,
-		},
-	})
-	template.Do(coord)
+	for _, node := range nodes {
+		n.host = node
 
-	CheckCluster(coord, pass)
+		template.SetActionPerformer(&EnableHostAction{n})
+		_ = template.Do(coord)
+
+		template.SetActionPerformer(&AddNodeAction{n})
+
+		err := template.Do(coord)
+		if err != nil {
+			return err
+		}
+	}
+
+	CheckCluster(coord, user, pass, port)
+
+	return nil
 }

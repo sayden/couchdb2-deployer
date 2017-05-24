@@ -2,19 +2,18 @@ package couchdb
 
 import "fmt"
 
-type FinishClusterAction struct {
-	NodePassHolder
+type FinishAction struct {
+	Node
 }
 
-func (c *FinishClusterAction) GetRequest() *ClusterRequest {
-	enabler := newClusterRequestPrototype()
+func (c *FinishAction) GetRequest() *ClusterRequest {
+	enabler := newClusterRequestPrototype(c.Node)
 	enabler.Action = "finish_cluster"
-	enabler.Password = c.pass
 
 	return enabler
 }
 
-func (c *FinishClusterAction) HandleResponse(r *ClusterResponse) {
+func (c *FinishAction) HandleResponse(r *ClusterResponse) {
 	if r.Error == "" {
 		fmt.Printf("\nCluster created\n\n")
 	} else {

@@ -8,14 +8,14 @@ import (
 	"time"
 )
 
-func CheckCluster(coord, pass string) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://%s:5984/_membership", coord), nil)
+func CheckCluster(coord, user, pass string, port int) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://%s:%d/_membership", coord, port), nil)
 	if err != nil {
 		fmt.Printf("ERROR: Couldn't create request cluster membership\n%s\n", err.Error())
 		os.Exit(1)
 	}
 
-	req.SetBasicAuth("admin", pass)
+	req.SetBasicAuth(user, pass)
 
 	client := http.Client{
 		Timeout: time.Second * 3,

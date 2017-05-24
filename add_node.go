@@ -3,22 +3,20 @@ package couchdb
 import "fmt"
 
 type AddNodeAction struct {
-	NodePassHolder
+	Node
 }
 
 func (a *AddNodeAction) GetRequest() *ClusterRequest {
-	enabler := newClusterRequestPrototype()
+	enabler := newClusterRequestPrototype(a.Node)
 	enabler.Action = "add_node"
-	enabler.Host = a.node
-	enabler.Password = a.pass
 
 	return enabler
 }
 
 func (a *AddNodeAction) HandleResponse(resp *ClusterResponse) {
 	if resp.Error == "" {
-		fmt.Printf("Node '%s' joined successfully\n", a.node)
+		fmt.Printf("Node '%s' joined successfully\n", a.host)
 	} else {
-		fmt.Printf("%#v\n", resp)
+		fmt.Printf("ERROR Adding node: %#v\n%#v\n", resp, a.Node)
 	}
 }

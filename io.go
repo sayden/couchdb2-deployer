@@ -26,9 +26,11 @@ type MembershipResponse struct {
 	ClusterNodes []string `json:"cluster_nodes"`
 }
 
-func newClusterRequestPrototype() *ClusterRequest {
+func newClusterRequestPrototype(n Node) *ClusterRequest {
 	return &ClusterRequest{
-		Username: "admin",
-		Port:     5984,
+		Username: n.user,
+		Port:     n.port,
+		Password: n.pass,
+		Host:     n.host,
 	}
 }
